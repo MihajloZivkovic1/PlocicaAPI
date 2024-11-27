@@ -9,14 +9,13 @@ const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || 'development';
 const config = require(__dirname + '/../config/config.json')[env];
 const db = {};
+const { DATABASE_URL } = process.env;
 
 let sequelize;
-if (config.use_env_variable) {
+console.log(DATABASE_URL);
+if (process.env.NODE_ENV === 'production') {
   sequelize = new Sequelize(process.env.DATABASE_URL, {
-    dialect: config.dialect,
-    protocol: 'postgres',
-    logging: console.log, // or false to disable logging
-    dialectOptions: config.dialectOptions || {}, // Use SSL options if in production
+    dialect: 'postgres'
   });
 } else {
   // Use static config for development and test
