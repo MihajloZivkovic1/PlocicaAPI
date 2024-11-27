@@ -11,10 +11,11 @@ const config = require(__dirname + '/../config/config.json')[env];
 const db = {};
 const { DATABASE_URL } = process.env;
 
+
+
 let sequelize;
-console.log(DATABASE_URL);
 if (process.env.NODE_ENV === 'production') {
-  sequelize = new Sequelize(process.env.DATABASE_URL, {
+  sequelize = new Sequelize(DATABASE_URL, {
     dialect: 'postgres'
   });
 } else {
