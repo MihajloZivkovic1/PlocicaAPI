@@ -24,10 +24,11 @@ const mediaRoutes = require('./components/media/mediaRoutes')
 const app = express();
 app.use(express.json());
 
+const allowedOrigins = ['https://plocica-front.vercel.app'];
 
 
 app.use(cors({
-  origin: 'http://localhost:3001',
+  origin: allowedOrigins,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
