@@ -12,11 +12,17 @@ const db = {};
 const { DATABASE_URL } = process.env;
 
 
-
+console.log(process.env.NODE_ENV)
 let sequelize;
 if (process.env.NODE_ENV === 'production') {
   sequelize = new Sequelize(DATABASE_URL, {
-    dialect: 'postgres'
+    dialect: 'postgres',
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false,
+      }
+    }
   });
 } else {
   // Use static config for development and test
