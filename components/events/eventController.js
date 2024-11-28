@@ -6,6 +6,9 @@ exports.createEvent = async (req, res) => {
     const { profileId } = req.params;
     const { title, location, dateOfEvent, timeOfEvent, linkOfEvent } = req.body;
 
+    console.log("VREME IVENTA,", timeOfEvent);
+
+
     const profile = await Profile.findOne({
       where: {
         id: profileId
