@@ -123,8 +123,8 @@ exports.updateStory = async (req, res) => {
     }
 
 
-    if (title && title.length > 20) {
-      return res.status(400).json({ message: "Max length of the title is 20 characters" });
+    if (title && title.length > 50) {
+      return res.status(400).json({ message: "Max length of the title is 50 characters" });
     }
 
     // if (text && text.length > 255) {
