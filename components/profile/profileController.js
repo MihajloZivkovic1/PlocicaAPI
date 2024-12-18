@@ -45,10 +45,11 @@ exports.editProfile = async (req, res) => {
       });
 
       const s3 = new AWS.S3();
+      const now = new Date();
 
       // const upload = multer({ storage: multer.memoryStorage() });
 
-      const fileName = `profile_${id}_${req.file.originalname}`;
+      const fileName = `profile_${id}_${req.file.originalname}-${now}`;
 
       const params = {
         Bucket: 'qrplocice',
