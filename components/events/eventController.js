@@ -6,8 +6,7 @@ exports.createEvent = async (req, res) => {
     const { profileId } = req.params;
     const { title, location, dateOfEvent, timeOfEvent, linkOfEvent } = req.body;
 
-    console.log("VREME IVENTA,", timeOfEvent);
-
+    console.log("Received Time:", timeOfEvent);
 
     const profile = await Profile.findOne({
       where: {
@@ -24,12 +23,13 @@ exports.createEvent = async (req, res) => {
       throw new Error("Event cannot be in past");
     }
 
+    const timeInUTC = timeOfEvent ? new Date(timeOfEvent).toISOString() : null;
 
     const event = await Event.create({
       title,
       location: location || null,
       dateOfEvent: dateOfEvent || null,
-      timeOfEvent: timeOfEvent || null,
+      timeOfEvent: timeInUTC,
       linkOfEvent: linkOfEvent || null,
       profileId
     });
@@ -44,7 +44,7 @@ exports.createEvent = async (req, res) => {
 exports.getProfileEvents = async (req, res) => {
   try {
     const { profileId } = req.params;
-    console.log(profileId);
+
     const events = await Event.findAll({
       where: {
         profileId: profileId
@@ -54,8 +54,12 @@ exports.getProfileEvents = async (req, res) => {
     if (events.length === 0) {
       return res.status(404).json({ message: 'No events found for this profile.' });
     }
+    const formattedEvents = events.map(event => ({
+      ...event.toJSON(),
+      timeOfEvent: event.timeOfEvent ? new Date(event.timeOfEvent).toISOString() : null,
+    }));
 
-    return res.status(200).json(events);
+    return res.status(200).json(formattedEvents);
 
   } catch (error) {
     console.error(error);

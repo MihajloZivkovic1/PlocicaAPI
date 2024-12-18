@@ -36,7 +36,8 @@ exports.uploadMedia = async (req, res) => {
     });
 
     const s3 = new AWS.S3();
-    fileNameInS3 = `profile_${profileId}_${req.file.originalname}`;
+    const now = new Date()
+    fileNameInS3 = `profile_${profileId}_${req.file.originalname}-${now}`;
 
     const params = {
       Bucket: 'qrplocice',
