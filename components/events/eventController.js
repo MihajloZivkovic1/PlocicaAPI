@@ -23,13 +23,14 @@ exports.createEvent = async (req, res) => {
       throw new Error("Event cannot be in past");
     }
 
-    const timeInUTC = timeOfEvent ? new Date(timeOfEvent).toISOString() : null;
+    // const timeInUTC = timeOfEvent ? new Date(timeOfEvent).toISOString() : null;
+
 
     const event = await Event.create({
       title,
       location: location || null,
       dateOfEvent: dateOfEvent || null,
-      timeOfEvent: timeInUTC,
+      timeOfEvent: timeOfEvent,
       linkOfEvent: linkOfEvent || null,
       profileId
     });
