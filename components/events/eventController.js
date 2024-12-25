@@ -23,9 +23,6 @@ exports.createEvent = async (req, res) => {
       throw new Error("Event cannot be in past");
     }
 
-    const timeInUTC = timeOfEvent ? new Date(timeOfEvent).toISOString() : null;
-
-    console.log(timeInUTC);
     const event = await Event.create({
       title,
       location: location || null,

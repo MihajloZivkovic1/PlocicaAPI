@@ -60,7 +60,7 @@ exports.deleteLink = async (req, res) => {
     })
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: 'An error occurred while deleting the event.' });
+    return res.status(500).json({ message: 'An error occurred while deleting the link.' });
   }
 }
 
