@@ -43,23 +43,15 @@ exports.createEvent = async (req, res) => {
 exports.getProfileEvents = async (req, res) => {
   try {
     const { profileId } = req.params;
-
     const events = await Event.findAll({
-      where: {
-        profileId: profileId
-      }
+      where: { profileId }
     });
 
     if (events.length === 0) {
       return res.status(404).json({ message: 'No events found for this profile.' });
     }
-    const formattedEvents = events.map(event => ({
-      ...event.toJSON(),
-      timeOfEvent: event.timeOfEvent ? new Date(event.timeOfEvent).toISOString() : null,
-    }));
 
-    return res.status(200).json(formattedEvents);
-
+    return res.status(200).json(events);
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: 'An error occurred while fetching events.' });
