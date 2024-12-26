@@ -26,6 +26,11 @@ module.exports = (sequelize, DataTypes) => {
         as: "Media",
         foreignKey: "profileId", onDelete: "CASCADE"
       });
+
+      Profile.hasMany(models.Group, {
+        as: "Groups",
+        foreignKey: "profileId", onDelete: "CASCADE"
+      })
     }
   }
 
