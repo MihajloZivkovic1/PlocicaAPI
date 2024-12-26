@@ -140,7 +140,8 @@ exports.getProfilesGroups = async (req, res) => {
 
     if (groups.length === 0) {
       return res.json({
-        message: "No groups found for this user"
+        message: "No groups found for this user",
+        groups: []
       })
     }
 

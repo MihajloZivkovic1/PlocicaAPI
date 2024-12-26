@@ -1,6 +1,6 @@
 
 const error = require('../../middlewares/errorHandling/errorConstants');
-const { Profile, Story, Media, Event } = require('../../models')
+const { Profile, Story, Media, Event, Group } = require('../../models')
 
 const multer = require('multer');
 const AWS = require('aws-sdk');
@@ -109,6 +109,10 @@ exports.getProfileData = async (req, res) => {
           model: Event,
           as: "Events"
         },
+        {
+          model: Group,
+          as: "Groups"
+        }
       ]
     });
 
