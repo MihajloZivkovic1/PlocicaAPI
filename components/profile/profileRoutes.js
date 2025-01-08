@@ -15,4 +15,6 @@ router.put('/edit/:id', upload.single('profileImage'), catchAsyncError(profileCo
 router.get('/:qrCode', catchAsyncError(profileController.getProfileData));
 router.put('/edit/bio/:id', catchAsyncError(profileController.editProfilesBio));
 router.get('/profile/:id', catchAsyncError(profileController.getProfile));
+
+
 module.exports = router;

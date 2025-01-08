@@ -13,7 +13,79 @@ const error = require('../../middlewares/errorHandling/errorConstants');
 const bcrypt = require('bcrypt');
 const { where } = require('sequelize');
 
+exports.activateIfUserAlreadyExists = async (req, res) => {
+  const transaction = await sequelize.transaction();
 
+  try {
+    const { userId } = req.params
+    const { activationCode, profileName, email } = req.body
+    console.log(activationCode, profileName, email, userId);
+
+
+    console.log("user id i email", userId, email);
+
+
+    const validProduct = await Product.findOne(
+      {
+        where: {
+          activationCode: activationCode, status: "inactive"
+        },
+        transaction
+      })
+
+    const product = await Product.findOne({ where: { activationCode: activationCode } })
+    const user = await User.findOne({
+      where: {
+        id: userId,
+        email: email
+      }
+    })
+
+    if (!user) {
+      throw new Error(error.NOT_FOUND);
+    }
+
+    if (!product) {
+      throw new Error(error.NOT_FOUND);
+    }
+
+    if (!validProduct) {
+      throw new Error(error.ALREADY_ACTIVATED_PROFILE);
+    }
+
+    if (product === "active") {
+      throw new Error(error.ALREADY_ACTIVATED_PROFILE);
+    }
+
+    if (!profileName) {
+      throw new Error(error.MISSING_PARAMETERS)
+    }
+
+    const profile = await Profile.create({
+      profileName: profileName,
+      userId: userId,
+      qrCode: validProduct.qrCode
+    }, {
+      transaction
+    });
+
+    product.status = "active";
+
+    await product.save({ transaction });
+
+    await profile.save({ transaction });
+
+    await transaction.commit();
+
+
+    return res.json({ message: 'Product activated succesfully', profile });
+
+  } catch (error) {
+    if (transaction) await transaction.rollback();
+    console.error('Error creating user:', error);
+    return res.status(500).json({ message: 'Error creating profile, try again', error: error.message });
+  }
+}
 
 exports.activate = async (req, res) => {
   const transaction = await sequelize.transaction();

@@ -12,5 +12,7 @@ router.get('/verify', catchAsyncError(userController.verifyUser));
 router.get('/users', authMiddleware.authenticateToken, catchAsyncError(userController.getAllUsers));
 router.post('/addNewProfile', authMiddleware.authenticateToken, catchAsyncError(userController.addNewProfile))
 router.get('/getUsersProfiles/:id', catchAsyncError(userController.getUsersProfiles))
+router.post('/activateIfUserExists/:userId', catchAsyncError(userController.activateIfUserAlreadyExists))
+
 
 module.exports = router;
