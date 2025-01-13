@@ -5,6 +5,7 @@ const { Product } = require('../../models')
 const { Profile } = require('../../models')
 const { sequelize } = require('../../models');
 const CryptoJS = require("crypto-js");
+const nodemailer = require('nodemailer')
 
 const { sendVerificationEmail } = require('../../utils/mailer');
 const crypto = require('crypto');
@@ -12,6 +13,7 @@ const jwt = require('jsonwebtoken');
 const error = require('../../middlewares/errorHandling/errorConstants');
 const bcrypt = require('bcrypt');
 const { where } = require('sequelize');
+
 
 exports.activateIfUserAlreadyExists = async (req, res) => {
   const transaction = await sequelize.transaction();
@@ -347,4 +349,107 @@ exports.getAllUsers = async (req, res) => {
 }
 
 
-//isThisMyPokojnik middleware
+exports.resetPasswordRequest = async (req, res) => {
+  const { email } = req.body;
+
+
+  try {
+    const user = await User.findOne({
+      where: {
+        email: email
+      }
+    })
+
+    if (!user) {
+      throw new Error(error.NOT_FOUND);
+    }
+
+
+    const token = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: "10m" });
+
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      port: 465,
+      secure: true,
+      auth: {
+        user: "mihajlozivkovic0104@gmail.com",
+        pass: "gilz ovfl qage gfpt"
+      }
+    })
+
+    const resetLink = `http://localhost:3001/reset-password/${token}`; //link ka reset stranici koja treba da bude jednokratna
+
+    await transporter.sendMail({
+      from: 'mihajlozivkovic0104@gmail.com',
+      to: email,
+      subject: "Reset password email",
+      text: `Please enter this link and change your password: ${resetLink}`
+    })
+
+    return res.status(200).json({ message: "Link za resetovanje šifre je poslat na vašu email adresu." });
+
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      message: "Server error", error: error.message
+    })
+  }
+
+}
+
+exports.resetPassword = async (req, res) => {
+  const { token, password } = req.body;
+
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET)
+
+    const { email } = decoded;
+
+    const user = await User.findOne(
+      {
+        where: {
+          email: email
+        }
+      }
+    )
+
+    if (!user) {
+      return res.status(404).json({ message: error.NOT_FOUND });
+    }
+
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    user.password = hashedPassword;
+    await user.save();
+
+    return res.status(200).json({ ok: true, message: "Password changed successfully!" });
+
+
+  } catch (error) {
+    console.error(error);
+
+    if (error.name === "JsonWebTokenError" || error.name === "TokenExpiredError") {
+      return res.status(400).json({ message: "Token not valid." });
+    }
+
+    return res.status(500).json({ message: "An error occured." });
+  }
+}
+
+exports.validateToken = async (req, res) => {
+  const { token } = req.body;
+
+  try {
+    jwt.verify(token, process.env.JWT_SECRET);
+    return res.status(200).json({ valid: true });
+  } catch (error) {
+    console.error(error);
+    if (error.name === "JsonWebTokenError" || error.name === "TokenExpiredError") {
+      return res.status(400).json({ valid: false, message: "Token not valid." });
+    }
+    return res.status(500).json({ valid: false, message: "Server error." });
+  }
+};

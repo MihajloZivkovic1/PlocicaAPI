@@ -13,6 +13,9 @@ router.get('/users', authMiddleware.authenticateToken, catchAsyncError(userContr
 router.post('/addNewProfile', authMiddleware.authenticateToken, catchAsyncError(userController.addNewProfile))
 router.get('/getUsersProfiles/:id', catchAsyncError(userController.getUsersProfiles))
 router.post('/activateIfUserExists/:userId', catchAsyncError(userController.activateIfUserAlreadyExists))
+router.post('/reset-password-request', catchAsyncError(userController.resetPasswordRequest));
+router.post('/reset-password', catchAsyncError(userController.resetPassword));
+router.post('/validate-token', catchAsyncError(userController.validateToken));
 
 
 module.exports = router;
