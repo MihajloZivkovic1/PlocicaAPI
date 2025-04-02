@@ -453,3 +453,43 @@ exports.validateToken = async (req, res) => {
     return res.status(500).json({ valid: false, message: "Server error." });
   }
 };
+
+exports.changePassword = async (req, res) => {
+  const { currentPassword, newPassword } = req.body;
+  const userId = req.user.userId;
+
+  console.log(userId);
+
+  try {
+
+    const user = await User.findOne({
+      where: {
+        id: userId
+      }
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: error.NOT_FOUND });
+    }
+
+    //da li je trenuti password koji je klijent uneo isti kao ovaj u bazi 
+    const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
+    if (!isPasswordValid) {
+      return res.status(400).json({ message: "Current password is incorrect." });
+    }
+
+
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+
+
+    user.password = hashedPassword;
+    await user.save();
+
+    return res.status(200).json({ ok: true, message: "Password changed successfully!" });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "An error occurred while changing the password." });
+  }
+};

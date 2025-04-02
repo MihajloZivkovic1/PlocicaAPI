@@ -16,6 +16,7 @@ router.post('/activateIfUserExists/:userId', catchAsyncError(userController.acti
 router.post('/reset-password-request', catchAsyncError(userController.resetPasswordRequest));
 router.post('/reset-password', catchAsyncError(userController.resetPassword));
 router.post('/validate-token', catchAsyncError(userController.validateToken));
+router.post('/change-password', authMiddleware.authenticateToken, catchAsyncError(userController.changePassword));
 
 
 module.exports = router;
